@@ -1,0 +1,4 @@
+.DS_Store
+.vscode/
+target/
+photon_firmware_*.bin
