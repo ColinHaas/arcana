@@ -1,30 +1,62 @@
 #define SYSLOG_DEBUG
 #include <psyslog.h>
 
-#include "network.h"
 #include "config.h"
+#include "network.h"
 
+unsigned long Network::updated = 0;
 unsigned long Network::synchronized = 0;
+bool Network::configured = false;
 
 bool Network::setup()
 {
+    // wait for network or configure new connection
     if (waitFor(WiFi.ready, TIMEOUT_WIFI_READY))
     {
-        // initialize connection to syslog server
-        syslog_initialize(SERVER_URL, 514);
-
-        LOGD("ready");
-        return true;
+        // configure network connections once available
+        update();
     }
-    return false;
+    else
+    {
+        // enable listening mode
+        WiFi.listen();
+    }
+
+    return configured;
 }
 
 void Network::update()
 {
-    // synchronize time with cloud once per day
-    if (millis() - synchronized > (24 * 60 * 60 * 1000))
+    if (WiFi.ready())
     {
-        Particle.syncTime();
-        synchronized = millis();
+        // configure network connections if not already configured
+        if (!configured)
+        {
+            // initialize connection to syslog server
+            syslog_initialize(SERVER_URL, 514);
+
+            configured = true;
+        }
+
+        // synchronize time with cloud once per day
+        if (millis() - synchronized > TIME_SYNC_INTERVAL)
+        {
+            if (Particle.syncTime())
+            {
+                synchronized = millis();
+            }
+        }
+
+        updated = millis();
+    }
+    else
+    {
+        configured = false;
+
+        // enable listening mode if unable to connect to network
+        if (!(WiFi.listening() || WiFi.connecting()))
+        {
+            WiFi.listen();
+        }
     }
 }

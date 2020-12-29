@@ -4,8 +4,6 @@
 #include "audio.h"
 #include "config.h"
 
-SYSTEM_THREAD(ENABLED);
-
 Speaker Audio::speaker = Speaker(AUDIO_BUFFER_SIZE);
 uint16_t Audio::amplitude = 50000; // (0-65535)
 uint32_t Audio::signal = 0;

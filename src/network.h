@@ -10,7 +10,9 @@ public:
     static void update();
 
 private:
+    static unsigned long updated;
     static unsigned long synchronized;
+    static bool configured;
 };
 
 #endif

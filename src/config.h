@@ -7,6 +7,7 @@
 static const char *SERVER_URL = "nexi.local";
 static const unsigned long TIMEOUT_WIFI_READY = 15000;
 static const unsigned long TIMEOUT_TIME_SYNC = 10000;
+static const unsigned long TIME_SYNC_INTERVAL = (24 * 60 * 60 * 1000); // 24 hours
 
 // audio
 static const uint8_t PIEZO_PIN = DAC;
