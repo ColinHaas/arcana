@@ -1,76 +1,78 @@
-#define SYSLOG_DEBUG
-#include <psyslog.h>
+#include <Adafruit_TSL2561_U.h>
+#include <FastLED.h>
+FASTLED_USING_NAMESPACE
+#include <neopixel.h>
 
 #include "display.h"
 #include "config.h"
 #include "graphics.h"
+#include "network.h"
 
-Adafruit_TSL2561_Unified Display::tsl = Adafruit_TSL2561_Unified(TSL2561_ADDR_FLOAT, 2561);
-Adafruit_NeoPixel Display::output = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, SK6812RGBW);
-bool Display::ready = false;
-uint32_t Display::lux = 0;
-uint32_t Display::updated = 0;
-uint32_t Display::reported = 0;
+bool Display::sensing = false;
+
+Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified(TSL2561_I2C_ADDRESS, 2561);
+Adafruit_NeoPixel output = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, SK6812RGBW);
 
 void Display::setup()
 {
-  output.setBrightness(32);
+  output.setBrightness(DISPLAY_BRIGHTNESS_DEFAULT);
   output.begin();
   output.show();
 
-  if (tsl.begin())
+  if (wired(TSL2561_I2C_ADDRESS))
   {
-    tsl.enableAutoRange(true);
-    tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_13MS);
+    if (tsl.begin())
+    {
+      tsl.enableAutoRange(true);
+      tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_13MS);
 
-    LOGD("ready");
-    ready = true;
+      sensing = true;
+    }
   }
+
+  if (!sensing)
+    Serial.printlnf("<ERROR> TSL2561");
 }
 
-bool Display::update()
+void Display::update()
 {
-  if (!ready)
-  {
-    LOGE("error");
-    return false;
-  }
-
   static uint32_t updated;
-  if ((millis() - updated) >= PIXEL_UPDATE_INTERVAL)
+  if ((millis() - updated) >= UPDATE_INTERVAL_DISPLAY)
   {
-    // update ambient lux reading
-    uint16_t broadband;
-    uint16_t ir;
-    tsl.getLuminosity(&broadband, &ir);
-    lux = tsl.calculateLux(broadband, ir);
+    updated = millis();
 
-    // log ambient lux values at fixed interval
-    if ((millis() - reported) > DISPLAY_REPORT_INTERVAL)
+    if (sensing)
     {
-      LOGD("lux=%u", lux);
-      reported = millis();
+      // update ambient lux reading
+      uint16_t broadband;
+      uint16_t ir;
+      tsl.getLuminosity(&broadband, &ir);
+      uint32_t lux = tsl.calculateLux(broadband, ir);
+
+      // report lux reading to server
+      Network::lighting(lux);
     }
 
     test();
+
     output.show();
-
-    updated = millis();
-    return true;
   }
-
-  return false;
 }
 
 void Display::test()
 {
   static int marker = 0;
   static int increment = 1;
-  static uint32_t test_color = output.Color(random(256), random(256), random(256));
+
+  CHSV hsv = CHSV(random(256), 255, 255);
+  CRGB rgb;
+  hsv2rgb_rainbow(hsv, rgb);
+  static uint32_t color = output.Color(rgb.red, rgb.green, rgb.blue);
+
   output.clear();
   for (uint16_t i = 0; i < output.numPixels(); i++)
   {
-    output.setPixelColor(i, (i <= marker) ? test_color : output.Color(0, 0, 0, 0));
+    output.setPixelColor(i, (i <= marker) ? color : output.Color(0, 0, 0, 0));
   }
   marker += increment;
   if ((marker == (output.numPixels() - 1)) || (marker == 0))

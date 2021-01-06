@@ -1,47 +1,46 @@
-#define SYSLOG_DEBUG
-#include <psyslog.h>
+#include <Adafruit_BME280.h>
 
 #include "thermal.h"
 #include "config.h"
+#include "network.h"
 
-Adafruit_BME280 Thermal::bme = Adafruit_BME280();
-uint32_t Thermal::updated = 0;
-uint32_t Thermal::reported = 0;
-float Thermal::temperature = 0;
-float Thermal::pressure = 0;
-float Thermal::humidity = 0;
+bool Thermal::sensing = false;
 
-bool Thermal::setup()
+Adafruit_BME280 bme = Adafruit_BME280();
+
+void Thermal::setup()
 {
-    if (!bme.begin())
+    if (wired(BME280_I2C_ADDRESS))
     {
-        LOGC("error");
-        return false;
+        if (bme.begin())
+        {
+            bme.setSampling(Adafruit_BME280::MODE_NORMAL,
+                            Adafruit_BME280::SAMPLING_X1,
+                            Adafruit_BME280::SAMPLING_X1,
+                            Adafruit_BME280::SAMPLING_X1,
+                            Adafruit_BME280::FILTER_X16,
+                            Adafruit_BME280::STANDBY_MS_0_5);
+
+            sensing = true;
+        }
     }
 
-    bme.setSampling(Adafruit_BME280::MODE_NORMAL,
-                    Adafruit_BME280::SAMPLING_X1,
-                    Adafruit_BME280::SAMPLING_X1,
-                    Adafruit_BME280::SAMPLING_X1,
-                    Adafruit_BME280::FILTER_X16,
-                    Adafruit_BME280::STANDBY_MS_0_5);
-    return true;
+    if (!sensing)
+        Serial.printlnf("<ERROR> BME280");
 }
 
 void Thermal::update()
 {
-    if ((millis() - updated) >= THERMAL_UPDATE_INTERVAL)
+    static unsigned long updated;
+    if ((millis() - updated) >= UPDATE_INTERVAL_THERMAL)
     {
-        temperature = bme.readTemperature();
-        pressure = bme.readPressure();
-        humidity = bme.readHumidity();
-
         updated = millis();
-    }
 
-    if ((millis() - reported) > THERMAL_REPORT_INTERVAL)
-    {
-        LOGD("temperature=%f, pressure=%f, humidity=%f", temperature, pressure, humidity);
-        reported = millis();
+        if (sensing)
+        {
+            // read temperature and report to server
+            float temperature = bme.readTemperature();
+            Network::temperature(temperature);
+        }
     }
 }

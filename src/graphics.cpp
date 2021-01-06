@@ -1,6 +1,3 @@
-#define SYSLOG_DEBUG
-#include <psyslog.h>
-
 #include "graphics.h"
 
 const uint8_t gamma[] = {

@@ -1,6 +1,3 @@
-#define SYSLOG_DEBUG
-#include <psyslog.h>
-
 #include "buffer.h"
 
 template <typename T, unsigned int S>

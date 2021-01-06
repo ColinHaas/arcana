@@ -1,14 +1,13 @@
-#define SYSLOG_DEBUG
-#include <psyslog.h>
+#include <speaker.h>
 
 #include "audio.h"
 #include "config.h"
 
-Speaker Audio::speaker = Speaker(AUDIO_BUFFER_SIZE);
-uint16_t Audio::amplitude = 50000; // (0-65535)
-uint32_t Audio::signal = 0;
+Speaker speaker = Speaker(AUDIO_BUFFER_SIZE);
+uint16_t amplitude = 50000; // (0-65535)
+uint32_t signal = 0;
 
-bool Audio::setup()
+void Audio::setup()
 {
     // write initial data in the audio buffer (avoid initial silence)
     sawtooth(speaker.getBuffer(), AUDIO_TEST_FREQUENCY);
@@ -20,29 +19,22 @@ bool Audio::setup()
 
     // stop audio output
     speaker.end();
-
-    LOGD("ready");
-    return true;
 }
 
-bool Audio::update()
+void Audio::update()
 {
     if (speaker.ready())
     {
         // write new audio into buffer
         // sawtooth(speaker.getBuffer(), AUDIO_TEST_FREQUENCY);
-
-        return true;
     }
-
-    return false;
 }
 
-// fill buffer with generated sawtooth waveform
 void Audio::sawtooth(uint16_t *buffer, uint16_t frequency)
 {
     uint32_t increment = ((uint32_t)frequency * amplitude) / AUDIO_SAMPLING_FREQUENCY;
 
+    // fill buffer with generated sawtooth waveform
     for (uint16_t i = 0; i < AUDIO_BUFFER_SIZE; i++)
     {
         buffer[i] = signal;
