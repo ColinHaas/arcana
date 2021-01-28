@@ -5,11 +5,11 @@
 
 class Audio
 {
-public:
+  public:
     static void setup();
     static void update();
 
-private:
+  private:
     static void sawtooth(uint16_t *buffer, uint16_t frequency);
 };
 

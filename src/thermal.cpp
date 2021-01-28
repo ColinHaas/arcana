@@ -1,8 +1,8 @@
 #include <Adafruit_BME280.h>
 
-#include "thermal.h"
 #include "config.h"
 #include "network.h"
+#include "thermal.h"
 
 bool Thermal::sensing = false;
 
@@ -14,12 +14,8 @@ void Thermal::setup()
     {
         if (bme.begin())
         {
-            bme.setSampling(Adafruit_BME280::MODE_NORMAL,
-                            Adafruit_BME280::SAMPLING_X1,
-                            Adafruit_BME280::SAMPLING_X1,
-                            Adafruit_BME280::SAMPLING_X1,
-                            Adafruit_BME280::FILTER_X16,
-                            Adafruit_BME280::STANDBY_MS_0_5);
+            bme.setSampling(Adafruit_BME280::MODE_NORMAL, Adafruit_BME280::SAMPLING_X1, Adafruit_BME280::SAMPLING_X1,
+                            Adafruit_BME280::SAMPLING_X1, Adafruit_BME280::FILTER_X16, Adafruit_BME280::STANDBY_MS_0_5);
 
             sensing = true;
         }

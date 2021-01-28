@@ -5,14 +5,14 @@
 
 class Display
 {
-public:
-  static void setup();
-  static void update();
+  public:
+    static void setup();
+    static void update();
 
-private:
-  static bool sensing;
+  private:
+    static bool sensing;
 
-  static void test();
+    static void test();
 };
 
 #endif

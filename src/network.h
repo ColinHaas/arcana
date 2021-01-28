@@ -5,7 +5,7 @@
 
 class Network
 {
-public:
+  public:
     static const char *ID;
 
     static void setup();
@@ -17,19 +17,17 @@ public:
     static void lighting(uint32_t value);
     static void proximity(const uint16_t *values);
 
-private:
+  private:
     static void synchronize();
     static bool send(const char *topic, const char *message);
     static bool send(const char *topic, const byte *data, unsigned int length);
 
-    template <typename T>
-    static bool send(const char *topic, T value)
+    template <typename T> static bool send(const char *topic, T value)
     {
         return send(topic, String(value).c_str());
     }
 
-    template <typename T>
-    static bool send(const char *topic, const T *values, const char *delimiter)
+    template <typename T> static bool send(const char *topic, const T *values, const char *delimiter)
     {
         String message;
         for (unsigned int i = 0; i < (sizeof(values) / sizeof(T)); i++)

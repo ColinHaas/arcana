@@ -5,11 +5,11 @@
 
 class Thermal
 {
-public:
+  public:
     static void setup();
     static void update();
 
-private:
+  private:
     static bool sensing;
 };
 

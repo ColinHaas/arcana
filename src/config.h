@@ -61,8 +61,7 @@ static const uint8_t BME280_I2C_ADDRESS = 0x77;
 
 // Utility
 
-template <typename Base, typename T>
-static inline bool instanceof (const T *)
+template <typename Base, typename T> static inline bool instanceof (const T *)
 {
     return std::is_base_of<Base, T>::value;
 }

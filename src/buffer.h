@@ -3,29 +3,29 @@
 
 #include <Particle.h>
 
-template <typename T>
-struct Entry
+template <typename T> struct Entry
 {
-  const T value;
-  const unsigned long time;
+    const T value;
+    const unsigned long time;
 
-  Entry(T value, unsigned long time) : value(value), time(time) {}
+    Entry(T value, unsigned long time) : value(value), time(time)
+    {
+    }
 };
 
-template <typename T, unsigned int S>
-class Buffer
+template <typename T, unsigned int S> class Buffer
 {
-public:
-  const unsigned int size = S;
+  public:
+    const unsigned int size = S;
 
-  void push(T value, unsigned long time = millis());
-  const Entry<T> &entry(unsigned int offset);
-  T value(unsigned int offset);
-  unsigned long time(unsigned int offset);
+    void push(T value, unsigned long time = millis());
+    const Entry<T> &entry(unsigned int offset);
+    T value(unsigned int offset);
+    unsigned long time(unsigned int offset);
 
-private:
-  Entry<T> data[S];
-  unsigned int head = 0, tail = 0;
+  private:
+    Entry<T> data[S];
+    unsigned int head = 0, tail = 0;
 };
 
 #endif

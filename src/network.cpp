@@ -56,7 +56,10 @@ void Network::update()
     }
 }
 
-bool Network::connected() { return mqtt.isConnected(); }
+bool Network::connected()
+{
+    return mqtt.isConnected();
+}
 
 void Network::heartbeat()
 {
