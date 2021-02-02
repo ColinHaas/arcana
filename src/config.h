@@ -3,15 +3,13 @@
 
 #include <Particle.h>
 
-#define SERIAL_DEBUG
-
-// Networking
+// Network
 
 static const uint8_t SERVER_IP_ADDRESS[4] = {192, 168, 10, 113};
 static const uint16_t MQTT_DEFAULT_PORT = 1883;
 static const clock_t MQTT_TOPIC_LENGTH_MAX = 100;
 static const clock_t CLOUD_CONNECT_TIMEOUT = 30000;
-static const clock_t CONNECT_RETRY_INTERVAL = 2000;
+static const clock_t CONNECT_RETRY_INTERVAL = 60000;
 static const clock_t TIME_SYNC_INTERVAL = (24 * 60 * 60 * 1000);
 
 static const clock_t REPORT_INTERVAL_HEARTBEAT = 5000;
@@ -57,7 +55,7 @@ static const uint8_t MPR121_I2C_ADDRESS = 0x5A;
 // Thermal
 
 static const clock_t UPDATE_INTERVAL_THERMAL = 1000;
-static const uint8_t BME280_I2C_ADDRESS = 0x77;
+static const uint8_t BME280_I2C_ADDRESS = 0x76;
 
 // Utility
 
@@ -66,7 +64,7 @@ template <typename Base, typename T> static inline bool instanceof (const T *)
     return std::is_base_of<Base, T>::value;
 }
 
-static bool wired(uint8_t address)
+static inline bool wired(uint8_t address)
 {
     Wire.begin();
     Wire.beginTransmission(address);

@@ -22,7 +22,7 @@ void Thermal::setup()
     }
 
     if (!sensing)
-        Serial.printlnf("<ERROR> BME280");
+        Serial.println("<ERROR> BME280 Setup");
 }
 
 void Thermal::update()

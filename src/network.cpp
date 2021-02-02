@@ -7,19 +7,20 @@
 const char *Network::ID = System.deviceID().c_str();
 
 void receive(char *topic, byte *payload, unsigned int length);
-
 MQTT mqtt((uint8_t *)SERVER_IP_ADDRESS, MQTT_DEFAULT_PORT, receive);
 
 void Network::setup()
 {
-#ifdef SERIAL_DEBUG
     waitFor(Particle.connected, CLOUD_CONNECT_TIMEOUT);
+
     Serial.printlnf("<ID> %s", ID);
     IPAddress ip = WiFi.localIP();
     Serial.printlnf("<LOCAL_IP> %d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
     uint8_t *mac = WiFi.macAddress(mac);
     Serial.printlnf("<MAC_ADDRESS> %02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-#endif
+
+    if (!mqtt.connect(ID))
+        Serial.println("<SERVER_ERROR>");
 }
 
 void Network::update()
@@ -68,12 +69,12 @@ void Network::heartbeat()
     static unsigned long reported;
     if ((millis() - reported) > REPORT_INTERVAL_HEARTBEAT)
     {
-        String timestamp = Time.format(Time.now(), TIME_FORMAT_ISO8601_FULL);
+        reported = millis();
 
-        if (send(topic, timestamp.c_str()))
-        {
-            reported = millis();
-        }
+        String timestamp = Time.format(Time.now(), TIME_FORMAT_ISO8601_FULL);
+        send(topic, timestamp.c_str());
+
+        Serial.printlnf("Heartbeat -> %s", timestamp);
     }
 }
 
@@ -84,10 +85,11 @@ void Network::temperature(float value)
     static unsigned long reported;
     if ((millis() - reported) > REPORT_INTERVAL_TEMPERATURE)
     {
-        if (send(topic, value))
-        {
-            reported = millis();
-        }
+        reported = millis();
+
+        send(topic, value);
+
+        Serial.printlnf("Temperature -> %.2f°", value);
     }
 }
 
@@ -98,10 +100,11 @@ void Network::lighting(uint32_t value)
     static unsigned long reported;
     if ((millis() - reported) > REPORT_INTERVAL_LIGHTING)
     {
-        if (send(topic, value))
-        {
-            reported = millis();
-        }
+        reported = millis();
+
+        send(topic, value);
+
+        Serial.printlnf("Lighting -> %u lx", value);
     }
 }
 
@@ -112,10 +115,14 @@ void Network::proximity(const uint16_t *values)
     static unsigned long reported;
     if ((millis() - reported) > REPORT_INTERVAL_PROXIMITY)
     {
-        if (send(topic.c_str(), values, " "))
-        {
-            reported = millis();
-        }
+        reported = millis();
+
+        send(topic.c_str(), values, " ");
+
+        Serial.print("Proximity ->");
+        for (int x = 0; x < PROXIMITY_ELECTRODE_COUNT; x++)
+            Serial.printf(" %u", values[x]);
+        Serial.println();
     }
 }
 
@@ -140,10 +147,8 @@ bool Network::send(const char *topic, const char *message)
     bool sent = mqtt.publish(topic, message);
     digitalWrite(BUILTIN_LED_PIN, LOW);
 
-#ifdef SERIAL_DEBUG
     if (sent)
         Serial.printlnf("<SEND> %s -> %s", message, topic);
-#endif
 
     return sent;
 }
@@ -157,10 +162,8 @@ bool Network::send(const char *topic, const byte *data, unsigned int length)
     bool sent = mqtt.publish(topic, data, length);
     digitalWrite(BUILTIN_LED_PIN, LOW);
 
-#ifdef SERIAL_DEBUG
     if (sent)
-        Serial.printlnf("<SEND> [%u bytes] -> %s", length, topic);
-#endif
+        Serial.printlnf("<SEND> [%u bytes] -> %s", length, data);
 
     return sent;
 }

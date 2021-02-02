@@ -13,11 +13,9 @@ void setup()
 {
     delay(2000);
 
-#ifdef SERIAL_DEBUG
     Serial.begin();
     waitUntil(Serial.isConnected);
     Serial.println();
-#endif
 
     pinMode(BUILTIN_LED_PIN, OUTPUT);
 
@@ -26,6 +24,8 @@ void setup()
     Thermal::setup();
     Display::setup();
     Touch::setup();
+
+    Serial.println("<START>");
 }
 
 void loop()
