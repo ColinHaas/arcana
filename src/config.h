@@ -31,10 +31,12 @@ static const pin_t BUILTIN_LED_PIN = D7;
 static const uint8_t STATUS_LED_BRIGHTNESS = 10;
 
 static const uint32_t RGB_STATUS_THERMAL = 0xFF0000; // red
-static const uint32_t RGB_STATUS_AUDIO = 0x7F7F00;   // yellow
-static const uint32_t RGB_STATUS_DISPLAY = 0x00FF00; // green
-static const uint32_t RGB_STATUS_NETWORK = 0x0000FF; // blue
-static const uint32_t RGB_STATUS_TOUCH = 0x7F007F;   // purple
+static const uint32_t RGB_STATUS_MOTION = 0xFF8700;  // orange
+static const uint32_t RGB_STATUS_AUDIO = 0xFFF700;   // yellow
+static const uint32_t RGB_STATUS_DISPLAY = 0x18FF00; // green
+static const uint32_t RGB_STATUS_NETWORK = 0x00EAFF; // cyan
+static const uint32_t RGB_STATUS_TOUCH = 0x0000FF;   // blue
+static const uint32_t RGB_STATUS_REMOTE = 0xD600FF;  // purple
 
 // Display
 
@@ -56,6 +58,14 @@ static const uint8_t MPR121_I2C_ADDRESS = 0x5A;
 
 static const clock_t UPDATE_INTERVAL_THERMAL = 1000;
 static const uint8_t BME280_I2C_ADDRESS = 0x76;
+
+// Motion
+
+static const pin_t RADAR_SIGNAL_PIN = A2;
+
+// Remote
+
+static const pin_t IR_DATA_PIN = D6;
 
 // Utility
 

@@ -3,6 +3,7 @@
 #include "audio.h"
 #include "config.h"
 #include "display.h"
+#include "motion.h"
 #include "network.h"
 #include "thermal.h"
 #include "touch.h"
@@ -24,6 +25,7 @@ void setup()
     Thermal::setup();
     Display::setup();
     Touch::setup();
+    Motion::setup();
 
     Serial.println("<START>");
 }
@@ -55,4 +57,7 @@ void loop()
 
     RGB.color(RGB_STATUS_AUDIO);
     Audio::update();
+
+    RGB.color(RGB_STATUS_MOTION);
+    Motion::update();
 }
