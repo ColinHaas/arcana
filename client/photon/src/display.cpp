@@ -8,6 +8,7 @@ FASTLED_USING_NAMESPACE
 #include "graphics.h"
 #include "network.h"
 
+bool Display::enabled = false;
 bool Display::sensing = false;
 
 Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified(TSL2561_I2C_ADDRESS, 2561);
@@ -15,9 +16,9 @@ Adafruit_NeoPixel output = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, SK6812RGBW)
 
 void Display::setup()
 {
-    output.setBrightness(DISPLAY_BRIGHTNESS_DEFAULT);
-    output.begin();
+    output.clear();
     output.show();
+    enabled = true;
 
     if (wired(TSL2561_I2C_ADDRESS))
     {
@@ -53,13 +54,14 @@ void Display::update()
             Network::lighting(lux);
         }
 
-        test();
-
+        // update display if enabled
+        if (!enabled)
+            output.clear();
         output.show();
     }
 }
 
-void Display::test()
+void Display::render()
 {
     static int marker = 0;
     static int increment = 1;

@@ -11,6 +11,7 @@ class Thermal
 
   private:
     static bool sensing;
+    static clock_t alarm;
 };
 
 #endif

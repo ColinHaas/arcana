@@ -6,13 +6,15 @@
 class Display
 {
   public:
+    static bool enabled;
+
     static void setup();
     static void update();
 
   private:
     static bool sensing;
 
-    static void test();
+    static void render();
 };
 
 #endif

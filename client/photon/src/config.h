@@ -43,7 +43,6 @@ static const uint32_t RGB_STATUS_REMOTE = 0xD600FF;  // purple
 static const pin_t PIXEL_PIN = D2;
 static const clock_t UPDATE_INTERVAL_DISPLAY = 15;
 static const uint16_t PIXEL_COUNT = 241;
-static const uint8_t DISPLAY_BRIGHTNESS_DEFAULT = 10;
 static const uint8_t TSL2561_I2C_ADDRESS = 0x39;
 
 // Touch
@@ -58,6 +57,12 @@ static const uint8_t MPR121_I2C_ADDRESS = 0x5A;
 
 static const clock_t UPDATE_INTERVAL_THERMAL = 1000;
 static const uint8_t BME280_I2C_ADDRESS = 0x76;
+static const pin_t FAN_CONTROL_PIN = A4;
+static const uint8_t FAN_SPEED_MIN = 100;
+static const uint8_t FAN_SPEED_MAX = 255;
+static const float FAN_ENABLE_TEMP = 35.0;
+static const float FAN_MAX_TEMP = 45.0;
+static const clock_t THERMAL_ALARM_TIME = 30000;
 
 // Motion
 
