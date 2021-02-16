@@ -1,3 +1,5 @@
 Language: Cpp
 BasedOnStyle: Microsoft
 AllowShortBlocksOnASingleLine: true
+AllowShortFunctionsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
